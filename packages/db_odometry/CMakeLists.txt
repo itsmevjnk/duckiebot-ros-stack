@@ -164,7 +164,6 @@ include_directories(
 catkin_install_python(PROGRAMS
   src/wheel_odom_node.py
   src/imu_node.py
-  src/odom_tf_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
