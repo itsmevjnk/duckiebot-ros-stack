@@ -5,7 +5,7 @@
     <arg name="robot_frame" default="base_link"/>
     <arg name="imu_frame" default="base_link"/> <!-- NOTE: not up to standard! -->
 
-    <arg name="publish_tf" default="false"/>
+    <arg name="publish_tf" default="true"/>
 
     <arg name="invert_wheels" default="false"/>
     <arg name="odom_imu_sync" default="false"/>
