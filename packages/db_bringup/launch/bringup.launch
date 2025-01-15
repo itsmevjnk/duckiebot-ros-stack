@@ -1,0 +1,48 @@
+<launch>
+    <arg name="robot_name"/>
+
+    <arg name="odom_frame" default="odom"/>
+    <arg name="robot_frame" default="base_link"/>
+    <arg name="imu_frame" default="base_link"/> <!-- NOTE: not up to standard! -->
+
+    <arg name="publish_tf" default="false"/>
+
+    <arg name="invert_wheels" default="false"/>
+    <arg name="odom_imu_sync" default="false"/>
+
+    <node name="cmdvel" pkg="db_cmdvel" type="cmdvel_node.py" output="screen">
+        <remap from="cmd_vel" to="/cmd_vel"/>
+        <remap from="emergency_brake" to="/emergency_brake"/>
+        <remap from="car_cmd_switch_node/cmd" to="/$(arg robot_name)/car_cmd_switch_node/cmd"/>
+        <remap from="wheels_driver_node/emergency_brake" to="/$(arg robot_name)/wheels_driver_node/emergency_brake"/>
+    </node>
+
+    <node name="wheel_odom" pkg="db_odometry" type="wheel_odom_node.py" output="screen">
+        <param name="robot_name" value="$(arg robot_name)"/>
+        <param name="odom_frame" value="$(arg odom_frame)"/>
+        <param name="robot_frame" value="$(arg robot_frame)"/>
+        <param name="invert" value="$(arg invert_wheels)"/>
+        <param name="imu_reloc" value="$(arg odom_imu_sync)"/>
+        <remap from="odom" to="/odom_wheel"/>
+        <remap from="left_wheel_encoder_node/tick" to="/$(arg robot_name)/left_wheel_encoder_node/tick"/>
+        <remap from="right_wheel_encoder_node/tick" to="/$(arg robot_name)/right_wheel_encoder_node/tick"/>
+    </node>
+
+    <node name="imu" pkg="db_odometry" type="imu_node.py" output="screen">
+        <param name="frame_id" value="$(arg imu_frame)"/>
+        <param name="calib_pts" value="0"/> <!-- do not calibrate (since imu_filter_madgwick/robot_localization will take care of that) -->
+
+        <remap from="imu" to="/imu"/> <!-- imu_node straight to robot_localization, no filter needed now -->
+        <remap from="imu_node/data" to="/$(arg robot_name)/imu_node/data"/>
+        <!-- <remap from="emergency_brake" to="/emergency_brake"/> -->
+    </node>
+
+    <node name="odom_fuser" pkg="robot_localization" type="ekf_localization_node">
+        <rosparam command="load" file="$(find db_bringup)/params/localisation.yml"/>
+        <param name="odom_frame" value="$(arg odom_frame)"/>
+        <param name="base_link_frame" value="$(arg robot_frame)"/>
+        <param name="publish_tf" value="(arg publish_tf)"/>
+
+        <remap from="odometry/filtered" to="/odom"/>
+    </node>
+</launch>
