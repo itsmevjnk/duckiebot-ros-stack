@@ -12,6 +12,8 @@
     <arg name="invert_wheels" default="false"/>
     <arg name="odom_imu_sync" default="false"/>
 
+    <arg name="filter_imu" default="true"/>
+
     <node name="cmdvel" pkg="db_cmdvel" type="cmdvel_node.py" output="screen" if="$(arg control)">
         <remap from="cmd_vel" to="/cmd_vel"/>
         <remap from="emergency_brake" to="/emergency_brake"/>
@@ -34,9 +36,17 @@
         <param name="frame_id" value="$(arg imu_frame)"/>
         <param name="calib_pts" value="0"/> <!-- do not calibrate (since imu_filter_madgwick/robot_localization will take care of that) -->
 
-        <remap from="imu" to="/imu"/> <!-- imu_node straight to robot_localization, no filter needed now -->
+        <remap from="imu" to="/imu" unless="$(arg filter_imu)"/>
+        <remap from="imu" to="/$(arg robot_name)/imu_node/data_renamed" if="$(arg filter_imu)"/>
         <remap from="imu_node/data" to="/$(arg robot_name)/imu_node/data"/>
         <!-- <remap from="emergency_brake" to="/emergency_brake"/> -->
+    </node>
+
+    <node name="imu_filter" pkg="imu_filter_madgwick" type="imu_filter_node" output="screen" if="$(arg filter_imu)">
+        <remap from="imu/data_raw" to="/$(arg robot_name)/imu_node/data_renamed"/>
+        <remap from="imu/data" to="/imu"/>
+        <param name="use_mag" value="false"/>
+        <param name="publish_tf" value="false"/>
     </node>
 
     <node name="odom_fuser" pkg="robot_localization" type="ekf_localization_node">
