@@ -25,7 +25,7 @@
         <param name="robot_frame" value="$(arg robot_frame)"/>
         <param name="invert" value="$(arg invert_wheels)"/>
         <param name="imu_reloc" value="$(arg odom_imu_sync)"/>
-        <remap from="odom" to="/odom_wheel"/>
+        <remap from="odom" to="/$(arg robot_name)/wheel_odom/odom"/>
         <remap from="left_wheel_encoder_node/tick" to="/$(arg robot_name)/left_wheel_encoder_node/tick"/>
         <remap from="right_wheel_encoder_node/tick" to="/$(arg robot_name)/right_wheel_encoder_node/tick"/>
     </node>
@@ -41,6 +41,7 @@
 
     <node name="odom_fuser" pkg="robot_localization" type="ekf_localization_node">
         <rosparam command="load" file="$(find db_bringup)/params/localisation.yml"/>
+        <param name="odom0" value="/$(arg robot_name)/wheel_odom/odom"/>
         <param name="odom_frame" value="$(arg odom_frame)"/>
         <param name="base_link_frame" value="$(arg robot_frame)"/>
         <param name="publish_tf" value="(arg publish_tf)"/>
