@@ -1,6 +1,8 @@
 <launch>
     <arg name="robot_name"/>
 
+    <arg name="control" default="false"/>
+
     <arg name="odom_frame" default="odom"/>
     <arg name="robot_frame" default="base_link"/>
     <arg name="imu_frame" default="base_link"/> <!-- NOTE: not up to standard! -->
@@ -10,7 +12,7 @@
     <arg name="invert_wheels" default="false"/>
     <arg name="odom_imu_sync" default="false"/>
 
-    <node name="cmdvel" pkg="db_cmdvel" type="cmdvel_node.py" output="screen">
+    <node name="cmdvel" pkg="db_cmdvel" type="cmdvel_node.py" output="screen" if="$(arg control)">
         <remap from="cmd_vel" to="/cmd_vel"/>
         <remap from="emergency_brake" to="/emergency_brake"/>
         <remap from="car_cmd_switch_node/cmd" to="/$(arg robot_name)/car_cmd_switch_node/cmd"/>
