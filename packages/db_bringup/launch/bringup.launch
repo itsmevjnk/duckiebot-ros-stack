@@ -48,4 +48,10 @@
 
         <remap from="odometry/filtered" to="/odom"/>
     </node>
+
+    <node name="kinvel" pkg="db_odometry" type="kinvel_node.py" output="screen">
+        <remap from="kinematics_node/velocity" to="/$(arg robot_name)/kinematics_node/velocity"/>
+        <remap from="kin_vel" to="/kin_vel"/>
+        <param name="frame_id" value="$(arg robot_frame)"/>
+    </node>
 </launch>
