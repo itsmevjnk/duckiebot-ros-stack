@@ -1,0 +1,9 @@
+topics:
+  - topic: /imu
+    type: sensor_msgs/msg/Imu
+  - topic: /odom
+    type: nav_msgs/msg/Odometry
+  - topic: /odom_wheel
+    type: nav_msgs/msg/Odometry
+  - topic: /kin_vel
+    type: geometry_msgs/msg/TwistStamped
